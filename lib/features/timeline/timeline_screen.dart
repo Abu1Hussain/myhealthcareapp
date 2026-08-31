@@ -8,6 +8,8 @@ import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
+import 'package:myhealth_ai/features/family/managing_dependent_banner.dart';
 import 'package:myhealth_ai/features/records/import_record_modal.dart';
 import 'package:myhealth_ai/features/records/record_detail_screen.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
@@ -49,6 +51,8 @@ class TimelineScreen extends ConsumerWidget {
     final aiState = ref.watch(aiSummaryControllerProvider);
     final controller = ref.read(timelineControllerProvider.notifier);
     final user = ref.watch(currentUserProvider);
+    final managedDependent = ref.watch(managedDependentProvider);
+    final patientId = managedDependent?.id ?? user?.id;
 
     return Scaffold(
       appBar: AppBar(
@@ -58,11 +62,11 @@ class TimelineScreen extends ConsumerWidget {
             tooltip: 'Import External PDF',
             icon: const Icon(Icons.upload_file_rounded),
             onPressed: () {
-              if (user != null) {
+              if (patientId != null) {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
-                  builder: (_) => ImportRecordModal(patientId: user.id),
+                  builder: (_) => ImportRecordModal(patientId: patientId),
                 );
               }
             },
@@ -72,6 +76,11 @@ class TimelineScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
+            if (managedDependent != null)
+              const Padding(
+                padding: EdgeInsets.fromLTRB(AppSpacing.pagePadding, AppSpacing.sm, AppSpacing.pagePadding, 0),
+                child: ManagingDependentBanner(),
+              ),
             // Search Bar & Filter Chips Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageHorizontal, vertical: AppSpacing.sm),
@@ -133,11 +142,11 @@ class TimelineScreen extends ConsumerWidget {
                           description: 'Upload a PDF medical report or complete a consultation to build your health timeline.',
                           actionLabel: 'Import PDF Report',
                           onAction: () {
-                            if (user != null) {
+                            if (patientId != null) {
                               showModalBottomSheet(
                                 context: context,
                                 isScrollControlled: true,
-                                builder: (_) => ImportRecordModal(patientId: user.id),
+                                builder: (_) => ImportRecordModal(patientId: patientId),
                               );
                             }
                           },

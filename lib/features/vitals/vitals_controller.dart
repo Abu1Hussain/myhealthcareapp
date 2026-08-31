@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
 
 class VitalsState {
   const VitalsState({
@@ -30,7 +31,8 @@ class VitalsController extends StateNotifier<VitalsState> {
 
     state = const VitalsState(isLoading: true);
 
-    final result = await ref.read(vitalsRepositoryProvider).getVitalsHistory(user.id, limit: 50);
+    final patientId = ref.read(managedDependentProvider)?.id ?? user.id;
+    final result = await ref.read(vitalsRepositoryProvider).getVitalsHistory(patientId, limit: 50);
 
     result.fold(
       (list) => state = VitalsState(vitals: list, isLoading: false),
@@ -51,8 +53,9 @@ class VitalsController extends StateNotifier<VitalsState> {
     final user = ref.read(currentUserProvider);
     if (user == null) return false;
 
+    final patientId = ref.read(managedDependentProvider)?.id ?? user.id;
     final result = await ref.read(vitalsRepositoryProvider).logVitals(
-          patientId: user.id,
+          patientId: patientId,
           recordedAt: DateTime.now(),
           systolic: systolic,
           diastolic: diastolic,
@@ -76,5 +79,6 @@ class VitalsController extends StateNotifier<VitalsState> {
 
 final vitalsControllerProvider =
     StateNotifierProvider<VitalsController, VitalsState>((ref) {
+  ref.watch(managedDependentProvider);
   return VitalsController(ref);
 });

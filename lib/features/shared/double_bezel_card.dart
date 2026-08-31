@@ -15,6 +15,7 @@ class DoubleBezelCard extends StatefulWidget {
     this.onTap,
     this.borderColor,
     this.backgroundColor,
+    this.accentColor,
   });
 
   final Widget child;
@@ -23,6 +24,11 @@ class DoubleBezelCard extends StatefulWidget {
   final VoidCallback? onTap;
   final Color? borderColor;
   final Color? backgroundColor;
+
+  /// Optional solid color-coded stripe along the card's leading edge —
+  /// used for at-a-glance triage priority (e.g. appointment urgency)
+  /// without overloading the status badges already inside the card.
+  final Color? accentColor;
 
   @override
   State<DoubleBezelCard> createState() => _DoubleBezelCardState();
@@ -61,13 +67,26 @@ class _DoubleBezelCardState extends State<DoubleBezelCard> with SingleTickerProv
         boxShadow: AppElevation.cardShadow,
       ),
       padding: const EdgeInsets.all(3.0), // Outer bezel offset
-      child: Container(
-        decoration: BoxDecoration(
-          color: widget.backgroundColor ?? defaultBg,
-          borderRadius: BorderRadius.circular(AppRadius.card),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        child: Container(
+          decoration: BoxDecoration(
+            color: widget.backgroundColor ?? defaultBg,
+          ),
+          child: widget.accentColor == null
+              ? Padding(padding: widget.padding, child: widget.child)
+              : IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(width: 4, color: widget.accentColor),
+                      Expanded(
+                        child: Padding(padding: widget.padding, child: widget.child),
+                      ),
+                    ],
+                  ),
+                ),
         ),
-        padding: widget.padding,
-        child: widget.child,
       ),
     );
 

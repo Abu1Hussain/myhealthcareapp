@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
 
 class AiSummaryState {
   const AiSummaryState({
@@ -31,9 +32,10 @@ class AiSummaryController extends StateNotifier<AiSummaryState> {
     state = const AiSummaryState(isLoading: true);
 
     try {
-      final recordsResult = await ref.read(recordRepositoryProvider).getTimelineForPatient(user.id, limit: 50);
-      final vitalsResult = await ref.read(vitalsRepositoryProvider).getVitalsHistory(user.id, limit: 30);
-      final medsResult = await ref.read(vitalsRepositoryProvider).getMedicationsForPatient(user.id);
+      final activePatient = ref.read(managedDependentProvider) ?? user;
+      final recordsResult = await ref.read(recordRepositoryProvider).getTimelineForPatient(activePatient.id, limit: 50);
+      final vitalsResult = await ref.read(vitalsRepositoryProvider).getVitalsHistory(activePatient.id, limit: 30);
+      final medsResult = await ref.read(vitalsRepositoryProvider).getMedicationsForPatient(activePatient.id);
 
       final records = recordsResult.fold((l) => l, (r) => <MedicalRecord>[]);
       final vitals = vitalsResult.fold((l) => l, (r) => <VitalsRecord>[]);
@@ -41,7 +43,7 @@ class AiSummaryController extends StateNotifier<AiSummaryState> {
 
       final cache = ref.read(aiResultCacheProvider);
       final summaryResult = await cache.getOrGenerateSummary(
-        patient: user,
+        patient: activePatient,
         records: records,
         vitals: vitals,
         medications: meds,
@@ -60,5 +62,6 @@ class AiSummaryController extends StateNotifier<AiSummaryState> {
 
 final aiSummaryControllerProvider =
     StateNotifierProvider<AiSummaryController, AiSummaryState>((ref) {
+  ref.watch(managedDependentProvider);
   return AiSummaryController(ref);
 });

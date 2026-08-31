@@ -4,12 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/failures.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
+import 'package:myhealth_ai/features/auth/remembered_accounts_store.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String _kSessionUserIdKey = 'session_user_id';
 
 /// Current authenticated user state provider.
 final currentUserProvider = StateProvider<User?>((ref) => null);
+
+/// Email the login screen should pre-fill on next build — set when the
+/// user picks a remembered account from the "Switch Account" picker, so
+/// they only need to re-type the password, not the whole email.
+final loginPrefillEmailProvider = StateProvider<String?>((ref) => null);
 
 /// Auth state holder.
 class AuthState {
@@ -60,6 +67,7 @@ class AuthController extends StateNotifier<AuthState> {
         ref.read(currentUserProvider.notifier).state = user;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt(_kSessionUserIdKey, user.id);
+        await RememberedAccountsStore.remember(user);
         state = const AuthState(isLoading: false);
         return true;
       },
@@ -105,6 +113,7 @@ class AuthController extends StateNotifier<AuthState> {
         ref.read(currentUserProvider.notifier).state = user;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt(_kSessionUserIdKey, user.id);
+        await RememberedAccountsStore.remember(user);
         state = const AuthState(isLoading: false);
         return true;
       },
@@ -121,6 +130,7 @@ class AuthController extends StateNotifier<AuthState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kSessionUserIdKey);
     ref.read(currentUserProvider.notifier).state = null;
+    ref.read(managedDependentProvider.notifier).state = null;
     state = const AuthState(isLoading: false);
   }
 

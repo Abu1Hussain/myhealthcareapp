@@ -10,6 +10,7 @@ import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/skeletal_shimmer.dart';
+import 'package:myhealth_ai/features/shared/theme_toggle_button.dart';
 
 class UserManagementScreen extends ConsumerStatefulWidget {
   const UserManagementScreen({super.key});
@@ -36,6 +37,7 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
       appBar: AppBar(
         title: const Text('Staff & User Management'),
         actions: [
+          const ThemeToggleButton(),
           IconButton(
             icon: const Icon(Icons.person_add_rounded),
             tooltip: 'Add Staff Member',

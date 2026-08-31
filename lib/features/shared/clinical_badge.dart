@@ -5,18 +5,30 @@ import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 
+/// Semantic badge tone. Resolved to a concrete text color at build time
+/// against [Theme.brightness] — small (11px) badge text needs a real WCAG
+/// AA ratio (>=4.5:1) against the tint it actually renders on, and that
+/// ratio requires a *different* shade in light vs. dark mode (darken for
+/// light tints, lighten for dark tints — a single fixed color can't hit
+/// AA in both). See AppColors' "Badge text-on-tint" section for the
+/// verified pairs.
+enum ClinicalTone { success, warning, critical, info, primary, ai }
+
 /// Pill status badge for risk bands, appointment states, and clinical categories.
 ///
 /// [backgroundColor]/[textColor] are optional — when omitted the badge
 /// resolves a neutral, theme-adaptive gray at build time instead of a
 /// hardcoded light-mode color, so "neutral" badges (Completed, Dismissed,
-/// Discharge…) still read correctly in dark mode.
+/// Discharge…) still read correctly in dark mode. Prefer [tone] over a
+/// hardcoded [textColor] for semantic (success/warning/critical/…) badges
+/// so the text stays AA-compliant in both themes.
 class ClinicalBadge extends StatelessWidget {
   const ClinicalBadge({
     super.key,
     required this.label,
     this.backgroundColor,
     this.textColor,
+    this.tone,
     this.icon,
     this.pulsing = false,
   });
@@ -27,21 +39,21 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Low Risk',
           backgroundColor: Color(0x2010B981),
-          textColor: AppColors.riskLow,
+          tone: ClinicalTone.success,
           icon: Icons.shield_outlined,
         );
       case RiskBand.medium:
         return const ClinicalBadge(
           label: 'Medium Risk',
           backgroundColor: Color(0x20F59E0B),
-          textColor: AppColors.riskMedium,
+          tone: ClinicalTone.warning,
           icon: Icons.warning_amber_rounded,
         );
       case RiskBand.high:
         return const ClinicalBadge(
           label: 'High Risk',
           backgroundColor: Color(0x20EF4444),
-          textColor: AppColors.riskHigh,
+          tone: ClinicalTone.critical,
           icon: Icons.error_outline_rounded,
           pulsing: true,
         );
@@ -54,19 +66,19 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Booked',
           backgroundColor: Color(0x203B82F6),
-          textColor: AppColors.info,
+          tone: ClinicalTone.info,
         );
       case AppointmentStatus.confirmed:
         return const ClinicalBadge(
           label: 'Confirmed',
           backgroundColor: Color(0x2010B981),
-          textColor: AppColors.success,
+          tone: ClinicalTone.success,
         );
       case AppointmentStatus.checkedIn:
         return const ClinicalBadge(
           label: 'Checked In',
           backgroundColor: Color(0x200D9488),
-          textColor: AppColors.primaryTeal,
+          tone: ClinicalTone.primary,
           icon: Icons.check_circle_outline_rounded,
         );
       case AppointmentStatus.completed:
@@ -75,13 +87,13 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Cancelled',
           backgroundColor: Color(0x20EF4444),
-          textColor: AppColors.critical,
+          tone: ClinicalTone.critical,
         );
       case AppointmentStatus.noShow:
         return const ClinicalBadge(
           label: 'No-Show',
           backgroundColor: Color(0x25EF4444),
-          textColor: AppColors.critical,
+          tone: ClinicalTone.critical,
           icon: Icons.person_off_outlined,
           pulsing: true,
         );
@@ -95,7 +107,7 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Consultation',
           backgroundColor: Color(0x200D9488),
-          textColor: AppColors.primaryTeal,
+          tone: ClinicalTone.primary,
           icon: Icons.description_outlined,
         );
       case RecordType.labResult:
@@ -103,7 +115,7 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Lab Report',
           backgroundColor: Color(0x203B82F6),
-          textColor: AppColors.info,
+          tone: ClinicalTone.info,
           icon: Icons.science_outlined,
         );
       case RecordType.imaging:
@@ -111,21 +123,21 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Imaging',
           backgroundColor: Color(0x208B5CF6),
-          textColor: AppColors.aiAccent,
+          tone: ClinicalTone.ai,
           icon: Icons.image_outlined,
         );
       case RecordType.prescription:
         return const ClinicalBadge(
           label: 'Prescription',
           backgroundColor: Color(0x2010B981),
-          textColor: AppColors.success,
+          tone: ClinicalTone.success,
           icon: Icons.medication_outlined,
         );
       case RecordType.vaccination:
         return const ClinicalBadge(
           label: 'Vaccine',
           backgroundColor: Color(0x20F59E0B),
-          textColor: AppColors.warning,
+          tone: ClinicalTone.warning,
           icon: Icons.vaccines_outlined,
         );
       case RecordType.dischargeSummary:
@@ -134,7 +146,7 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Referral',
           backgroundColor: Color(0x200D9488),
-          textColor: AppColors.primaryTeal,
+          tone: ClinicalTone.primary,
         );
     }
   }
@@ -145,19 +157,19 @@ class ClinicalBadge extends StatelessWidget {
         return const ClinicalBadge(
           label: 'Pending',
           backgroundColor: Color(0x20F59E0B),
-          textColor: AppColors.warning,
+          tone: ClinicalTone.warning,
         );
       case TaskStatus.inProgress:
         return const ClinicalBadge(
           label: 'In Progress',
           backgroundColor: Color(0x203B82F6),
-          textColor: AppColors.info,
+          tone: ClinicalTone.info,
         );
       case TaskStatus.completed:
         return const ClinicalBadge(
           label: 'Completed',
           backgroundColor: Color(0x2010B981),
-          textColor: AppColors.success,
+          tone: ClinicalTone.success,
         );
       case TaskStatus.dismissed:
         return const ClinicalBadge(label: 'Dismissed');
@@ -167,12 +179,32 @@ class ClinicalBadge extends StatelessWidget {
   final String label;
   final Color? backgroundColor;
   final Color? textColor;
+  final ClinicalTone? tone;
   final IconData? icon;
   final bool pulsing;
 
+  static Color _toneTextColor(ClinicalTone tone, bool isDark) {
+    switch (tone) {
+      case ClinicalTone.success:
+        return isDark ? AppColors.successTextDark : AppColors.successTextLight;
+      case ClinicalTone.warning:
+        return isDark ? AppColors.warningTextDark : AppColors.warningTextLight;
+      case ClinicalTone.critical:
+        return isDark ? AppColors.criticalTextDark : AppColors.criticalTextLight;
+      case ClinicalTone.info:
+        return isDark ? AppColors.infoTextDark : AppColors.infoTextLight;
+      case ClinicalTone.primary:
+        return isDark ? AppColors.primaryTextDark : AppColors.primaryTextLight;
+      case ClinicalTone.ai:
+        return isDark ? AppColors.aiTextDark : AppColors.aiTextLight;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final resolvedText = textColor ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final resolvedText = textColor ??
+        (tone != null ? _toneTextColor(tone!, isDark) : Theme.of(context).colorScheme.onSurfaceVariant);
     final resolvedBackground =
         backgroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.12);
 

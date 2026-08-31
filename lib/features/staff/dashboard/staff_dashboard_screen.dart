@@ -16,8 +16,11 @@ import 'package:myhealth_ai/features/shared/quick_switch_user_dialog.dart';
 import 'package:myhealth_ai/features/shared/safety_banner.dart';
 import 'package:myhealth_ai/features/shared/skeletal_shimmer.dart';
 import 'package:myhealth_ai/features/shared/staggered_fade_slide.dart';
+import 'package:myhealth_ai/features/shared/theme_toggle_button.dart';
 import 'package:myhealth_ai/features/staff/patients/patient_chart_screen.dart';
 import 'package:myhealth_ai/features/staff/schedule/doctor_schedule_screen.dart';
+import 'package:myhealth_ai/features/shared/urgency_legend.dart';
+import 'package:myhealth_ai/services/clinical/appointment_triage_service.dart';
 
 class StaffDashboardScreen extends ConsumerStatefulWidget {
   const StaffDashboardScreen({super.key});
@@ -50,6 +53,7 @@ class _StaffDashboardScreenState extends ConsumerState<StaffDashboardScreen> {
       appBar: AppBar(
         title: Text(staff.fullName),
         actions: [
+          const ThemeToggleButton(),
           IconButton(
             icon: const Icon(Icons.tune_rounded),
             tooltip: 'Schedule Availability Settings',
@@ -174,18 +178,30 @@ class _StaffDashboardScreenState extends ConsumerState<StaffDashboardScreen> {
                     );
                   }
 
+                  // Clinically urgent patients surface first regardless of
+                  // slot time, so staff triage the day at a glance.
+                  final sortedAppointments = [...appointments]
+                    ..sort((a, b) {
+                      final urgencyCompare = AppointmentTriageService.classify(b.reasonText).index
+                          .compareTo(AppointmentTriageService.classify(a.reasonText).index);
+                      if (urgencyCompare != 0) return urgencyCompare;
+                      return a.slotStart.compareTo(b.slotStart);
+                    });
+
                   return ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: appointments.length,
+                    itemCount: sortedAppointments.length,
                     itemBuilder: (context, index) {
-                      final appt = appointments[index];
+                      final appt = sortedAppointments[index];
+                      final urgency = AppointmentTriageService.classify(appt.reasonText);
 
                       return StaggeredFadeSlide(
                         index: index,
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: AppSpacing.md),
                           child: DoubleBezelCard(
+                            accentColor: urgency.accentColor,
                             onTap: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -196,18 +212,23 @@ class _StaffDashboardScreenState extends ConsumerState<StaffDashboardScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                Text(
+                                  '${formatTime24h(appt.slotStart)} – ${formatTime24h(appt.slotEnd)}',
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primaryTeal),
+                                ),
+                                const SizedBox(height: 6),
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
                                   children: [
-                                    Text(
-                                      '${formatTime24h(appt.slotStart)} – ${formatTime24h(appt.slotEnd)}',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primaryTeal),
+                                    ClinicalBadge(
+                                      label: urgency.label,
+                                      tone: urgency.tone,
+                                      icon: urgency.icon,
+                                      pulsing: urgency == AppointmentUrgency.urgent,
                                     ),
-                                    const Spacer(),
                                     ClinicalBadge.appointmentStatus(appt.status),
-                                    if (appt.riskBand != null) ...[
-                                      const SizedBox(width: 6),
-                                      ClinicalBadge.riskBand(appt.riskBand!),
-                                    ],
+                                    if (appt.riskBand != null) ClinicalBadge.riskBand(appt.riskBand!),
                                   ],
                                 ),
                                 const SizedBox(height: AppSpacing.sm),

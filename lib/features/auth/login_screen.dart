@@ -27,6 +27,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    // A "Switch Account" pick pre-fills the email so the user only needs
+    // to re-enter their password, never a stored credential.
+    final prefill = ref.read(loginPrefillEmailProvider);
+    if (prefill != null && prefill.isNotEmpty) {
+      _emailController.text = prefill;
+      _passwordController.clear();
+      Future.microtask(() => ref.read(loginPrefillEmailProvider.notifier).state = null);
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
