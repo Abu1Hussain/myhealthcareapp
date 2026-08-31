@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 
@@ -84,10 +85,10 @@ class QuickSwitchUserDialog extends ConsumerWidget {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                       child: Material(
-                        color: AppColors.surfaceElevatedLight,
+                        color: context.surfaceElevated,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          side: const BorderSide(color: AppColors.borderLight),
+                          side: BorderSide(color: context.borderColor),
                         ),
                         clipBehavior: Clip.antiAlias,
                         child: ListTile(
@@ -103,11 +104,11 @@ class QuickSwitchUserDialog extends ConsumerWidget {
                           ),
                           title: Text(
                             acc['name']!,
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: context.textPrimary),
                           ),
                           subtitle: Text(
                             '${acc['role']} • ${acc['email']}',
-                            style: const TextStyle(fontSize: 11),
+                            style: TextStyle(fontSize: 11, color: context.textSecondary),
                           ),
                           onTap: () async {
                             Navigator.of(context).pop();

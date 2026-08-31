@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/ai_summary/ai_summary_controller.dart';
@@ -91,7 +92,7 @@ class AiSummaryScreen extends ConsumerWidget {
                           const Spacer(),
                           Text(
                             formatClinicalDate(summary.generatedAt),
-                            style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                            style: TextStyle(fontSize: 12, color: context.textSecondary),
                           ),
                         ],
                       ),
@@ -175,13 +176,13 @@ class AiSummaryScreen extends ConsumerWidget {
                                   const SizedBox(height: 2),
                                   Text(
                                     t.significance,
-                                    style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                    style: TextStyle(color: context.textSecondary, fontSize: 12),
                                   ),
                                 ],
                               ),
                             ),
                             const SizedBox(width: AppSpacing.xs),
-                            const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiaryLight),
+                            Icon(Icons.chevron_right_rounded, color: context.textTertiary),
                           ],
                         ),
                       ),
@@ -224,7 +225,7 @@ class AiSummaryScreen extends ConsumerWidget {
                                   ),
                                   Text(
                                     '${e.category} • ${e.date}',
-                                    style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                    style: TextStyle(color: context.textSecondary, fontSize: 11),
                                   ),
                                 ],
                               ),
@@ -270,7 +271,7 @@ class AiSummaryScreen extends ConsumerWidget {
                                 Expanded(
                                   child: Text(
                                     r,
-                                    style: const TextStyle(fontSize: 13, color: AppColors.textPrimaryLight),
+                                    style: TextStyle(fontSize: 13, color: context.textPrimary),
                                   ),
                                 ),
                               ],
@@ -288,15 +289,15 @@ class AiSummaryScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.canvasLight,
+                    color: context.canvasColor,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.borderLight),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Audit & Reproducibility Metadata (RQ1)',
+                        'Audit & Reproducibility Metadata',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -305,10 +306,10 @@ class AiSummaryScreen extends ConsumerWidget {
                       Text(
                         'Model: ${summary.modelId} • Prompt: ${summary.promptVersion}\n'
                         'Context Hash: ${summary.inputHash.substring(0, 16)}...',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'monospace',
                           fontSize: 11,
-                          color: AppColors.textSecondaryLight,
+                          color: context.textSecondary,
                         ),
                       ),
                     ],

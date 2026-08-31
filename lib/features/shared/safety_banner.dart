@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 
 /// Mandatory Clinical Safety Banner component (plan.md requirement).
 /// Displayed on every AI-generated surface.
@@ -23,7 +24,7 @@ class SafetyBanner extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.aiSurfaceLight,
+        color: context.aiSurface,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: AppColors.aiAccent.withValues(alpha: 0.3),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/data/seed/seeder.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -140,9 +141,9 @@ class _AiSettingsScreenState extends ConsumerState<AiSettingsScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'MyHealth AI features a resilient dual-mode strategy. When Mock Mode is enabled, the system uses deterministic medical summarization without network requests (100% defense insurance). When disabled, it calls the Anthropic Messages API.',
-                      style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                      style: TextStyle(color: context.textSecondary, fontSize: 12),
                     ),
                     const Divider(height: 24),
                     SwitchListTile(
@@ -223,9 +224,9 @@ class _AiSettingsScreenState extends ConsumerState<AiSettingsScreen> {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Generates 60 realistic patient personas, 12 staff clinicians, and 2 years of simulated vitals and encounters.',
-                      style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                      style: TextStyle(color: context.textSecondary, fontSize: 12),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     ElevatedButton.icon(

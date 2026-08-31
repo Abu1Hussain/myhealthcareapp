@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -179,11 +180,11 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
                           Text(patient.fullName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                           Text(
                             '${patient.age} yrs • ${patient.gender == 'M' ? 'Male' : 'Female'} • CPR: ${patient.nationalId}',
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13),
+                            style: TextStyle(color: context.textSecondary, fontSize: 13),
                           ),
                           Text(
                             'Contact: ${patient.phone} • Blood: ${patient.patientProfile?.bloodType ?? "N/A"}',
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                            style: TextStyle(color: context.textSecondary, fontSize: 12),
                           ),
                         ],
                       ),
@@ -199,9 +200,9 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          // Active Risk Flags Section (RQ3)
+          // Active Risk Flags Section
           Text(
-            'Active Clinical Risk Flags (RQ3)',
+            'Active Clinical Risk Flags',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -213,12 +214,12 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
               final flags = snapshot.data!.fold((l) => l, (_) => <RiskFlagItem>[]);
 
               if (flags.isEmpty) {
-                return const DoubleBezelCard(
+                return DoubleBezelCard(
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle_outline_rounded, color: AppColors.success),
-                      SizedBox(width: 12),
-                      Text('No active clinical risk flags detected.', style: TextStyle(color: AppColors.textSecondaryLight)),
+                      const Icon(Icons.check_circle_outline_rounded, color: AppColors.success),
+                      const SizedBox(width: 12),
+                      Text('No active clinical risk flags detected.', style: TextStyle(color: context.textSecondary)),
                     ],
                   ),
                 );
@@ -266,7 +267,7 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
                                 const SizedBox(height: 6),
                                 Text(
                                   'Detected: ${formatClinicalDate(flag.detectedAt)} (${flag.source.name})',
-                                  style: const TextStyle(fontSize: 10, color: AppColors.textSecondaryLight),
+                                  style: TextStyle(fontSize: 10, color: context.textSecondary),
                                 ),
                               ],
                             ),
@@ -346,7 +347,7 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
                       children: [
                         ClinicalBadge.recordType(rec.recordType),
                         const Spacer(),
-                        Text(formatClinicalDate(rec.occurredAt), style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight)),
+                        Text(formatClinicalDate(rec.occurredAt), style: TextStyle(fontSize: 12, color: context.textSecondary)),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -465,7 +466,7 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
                                 Text(formatClinicalDate(v.recordedAt), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                 Text(
                                   'BP: ${v.systolic?.round() ?? "-"}/${v.diastolic?.round() ?? "-"} mmHg • HR: ${v.heartRate?.round() ?? "-"} bpm • Glucose: ${v.glucose?.round() ?? "-"} mg/dL',
-                                  style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                  style: TextStyle(color: context.textSecondary, fontSize: 12),
                                 ),
                               ],
                             ),
@@ -531,18 +532,18 @@ class _PatientChartScreenState extends ConsumerState<PatientChartScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(med.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                          Text('${med.dose} • ${med.frequency}', style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12)),
+                          Text('${med.dose} • ${med.frequency}', style: TextStyle(color: context.textSecondary, fontSize: 12)),
                           Text(
                             'Started: ${formatClinicalDate(med.startDate)}${med.endDate != null ? " • Until: ${formatClinicalDate(med.endDate!)}" : ""}',
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                            style: TextStyle(color: context.textSecondary, fontSize: 11),
                           ),
                         ],
                       ),
                     ),
                     ClinicalBadge(
                       label: med.isActive ? 'Active' : 'Completed',
-                      backgroundColor: (med.isActive ? AppColors.success : AppColors.textSecondaryLight).withValues(alpha: 0.15),
-                      textColor: med.isActive ? AppColors.success : AppColors.textSecondaryLight,
+                      backgroundColor: med.isActive ? AppColors.success.withValues(alpha: 0.15) : null,
+                      textColor: med.isActive ? AppColors.success : null,
                     ),
                   ],
                 ),
@@ -569,7 +570,7 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 140,
-            child: Text(label, style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13)),
+            child: Text(label, style: TextStyle(color: context.textSecondary, fontSize: 13)),
           ),
           Expanded(
             child: Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),

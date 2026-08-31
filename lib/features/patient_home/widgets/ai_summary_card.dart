@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/ai_summary/ai_summary_controller.dart';
 import 'package:myhealth_ai/features/ai_summary/ai_summary_screen.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
@@ -42,7 +43,7 @@ class AiSummaryCard extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      'AI Health Summary (RQ1)',
+                      'AI Health Summary',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
@@ -51,7 +52,7 @@ class AiSummaryCard extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.aiSurfaceLight,
+                        color: context.aiSurface,
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: const Text(
@@ -72,12 +73,12 @@ class AiSummaryCard extends ConsumerWidget {
                       : (state.summary != null
                           ? '${state.summary!.trends.length} trends • ${state.summary!.keyEvents.length} milestones'
                           : 'Tap to generate automated clinical summary'),
-                  style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                  style: TextStyle(color: context.textSecondary, fontSize: 12),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.chevron_right_rounded, color: AppColors.textTertiaryLight),
+          Icon(Icons.chevron_right_rounded, color: context.textTertiary),
         ],
       ),
     );

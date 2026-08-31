@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
@@ -159,7 +160,7 @@ class _PatientSearchScreenState extends ConsumerState<PatientSearchScreen> {
                                     ),
                                     Text(
                                       '${patient.age} yrs • ${patient.gender == "M" ? "Male" : "Female"} • CPR: ${patient.nationalId}',
-                                      style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                      style: TextStyle(color: context.textSecondary, fontSize: 12),
                                     ),
                                     if (conditions.isNotEmpty) ...[
                                       const SizedBox(height: 4),
@@ -177,7 +178,7 @@ class _PatientSearchScreenState extends ConsumerState<PatientSearchScreen> {
                                   ],
                                 ),
                               ),
-                              const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondaryLight),
+                              Icon(Icons.chevron_right_rounded, color: context.textTertiary),
                             ],
                           ),
                         ),

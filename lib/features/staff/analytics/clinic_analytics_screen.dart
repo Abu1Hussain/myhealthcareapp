@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 
 class ClinicAnalyticsScreen extends ConsumerWidget {
@@ -33,7 +34,7 @@ class ClinicAnalyticsScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: const [
-                  Expanded(child: _KpiCard(label: 'ML ROC-AUC (RQ2)', value: '0.785', change: 'Logistic Reg.', isGood: true)),
+                  Expanded(child: _KpiCard(label: 'ML ROC-AUC', value: '0.785', change: 'Logistic Reg.', isGood: true)),
                   SizedBox(width: AppSpacing.sm),
                   Expanded(child: _KpiCard(label: 'High-Risk Triage', value: '14.2%', change: '3-tier escalation', isGood: true)),
                 ],
@@ -161,7 +162,7 @@ class _KpiCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11)),
+          Text(label, style: TextStyle(color: context.textSecondary, fontSize: 11)),
           const SizedBox(height: 4),
           Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
           const SizedBox(height: 2),
@@ -191,7 +192,7 @@ class _Legend extends StatelessWidget {
       children: [
         Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight)),
+        Text(label, style: TextStyle(fontSize: 11, color: context.textSecondary)),
       ],
     );
   }

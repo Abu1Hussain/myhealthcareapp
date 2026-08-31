@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
@@ -84,8 +85,8 @@ class MedicationsScreen extends ConsumerWidget {
                                   const Spacer(),
                                   ClinicalBadge(
                                     label: med.isActive ? 'ACTIVE' : 'DISCONTINUED',
-                                    backgroundColor: med.isActive ? const Color(0x2010B981) : const Color(0x2071717A),
-                                    textColor: med.isActive ? AppColors.success : AppColors.textSecondaryLight,
+                                    backgroundColor: med.isActive ? const Color(0x2010B981) : null,
+                                    textColor: med.isActive ? AppColors.success : null,
                                   ),
                                 ],
                               ),
@@ -97,7 +98,7 @@ class MedicationsScreen extends ConsumerWidget {
                               const SizedBox(height: 4),
                               Text(
                                 'Started ${med.startDate.day}/${med.startDate.month}/${med.startDate.year}',
-                                style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                style: TextStyle(color: context.textSecondary, fontSize: 11),
                               ),
                             ],
                           ),

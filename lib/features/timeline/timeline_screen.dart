@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
@@ -150,7 +151,7 @@ class TimelineScreen extends ConsumerWidget {
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                                 child: DoubleBezelCard(
-                                  backgroundColor: AppColors.aiSurfaceLight,
+                                  backgroundColor: context.aiSurface,
                                   borderColor: AppColors.aiAccent,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,7 +161,7 @@ class TimelineScreen extends ConsumerWidget {
                                           Icon(Icons.auto_awesome_rounded, color: AppColors.aiAccent, size: 18),
                                           SizedBox(width: AppSpacing.sm),
                                           Text(
-                                            'AI Key Timeline Milestones (RQ1)',
+                                            'AI Key Timeline Milestones',
                                             style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14, color: AppColors.aiAccent),
                                           ),
                                         ],
@@ -240,14 +241,14 @@ class TimelineScreen extends ConsumerWidget {
                                             const SizedBox(height: 4),
                                             Text(
                                               '${formatClinicalDate(record.occurredAt)} • ${record.sourceFacility}',
-                                              style: const TextStyle(color: AppColors.textTertiaryLight, fontSize: 11),
+                                              style: TextStyle(color: context.textTertiary, fontSize: 11),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
                                               record.body,
                                               maxLines: 2,
                                               overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13),
+                                              style: TextStyle(color: context.textSecondary, fontSize: 13),
                                             ),
                                             if (record.labValues.isNotEmpty) ...[
                                               const SizedBox(height: AppSpacing.sm),

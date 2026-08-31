@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -179,7 +180,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                       height: 4,
                       margin: const EdgeInsets.symmetric(horizontal: 2),
                       decoration: BoxDecoration(
-                        color: isActive ? AppColors.primaryTeal : AppColors.borderLight,
+                        color: isActive ? AppColors.primaryTeal : context.borderColor,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -360,7 +361,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                       ),
                       Text(
                         'Room ${doc['room']} • $_selectedDepartment',
-                        style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                        style: TextStyle(color: context.textSecondary, fontSize: 12),
                       ),
                     ],
                   ),
@@ -444,7 +445,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                             ),
                             Text(
                               '${slot.doctorName} • ${slot.departmentName}',
-                              style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                              style: TextStyle(color: context.textSecondary, fontSize: 12),
                             ),
                           ],
                         ),
@@ -459,7 +460,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.aiSurfaceLight,
+                            color: context.aiSurface,
                             borderRadius: BorderRadius.circular(AppRadius.xs),
                           ),
                           child: const Text(
@@ -511,7 +512,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('AI No-Show Risk (RQ2)', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                    const Text('AI No-Show Risk', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                     ClinicalBadge(
                       label: '${slot.prediction.riskLabel} (${slot.prediction.percentageLabel})',
                       backgroundColor: riskColor.withValues(alpha: 0.15),
@@ -522,12 +523,12 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   _reminderDescription(slot.prediction.riskBand),
-                  style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                  style: TextStyle(color: context.textSecondary, fontSize: 12),
                 ),
                 if (slot.prediction.topRiskFactors.isNotEmpty || slot.prediction.topProtectiveFactors.isNotEmpty) ...[
                   const Divider(height: 20),
                   const Text(
-                    'AI Risk Explainability (RQ2 Feature Attribution)',
+                    'AI Risk Explainability',
                     style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.aiAccent),
                   ),
                   const SizedBox(height: 6),
@@ -590,7 +591,7 @@ class _SummaryRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13)),
+          Text(label, style: TextStyle(color: context.textSecondary, fontSize: 13)),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
         ],
       ),

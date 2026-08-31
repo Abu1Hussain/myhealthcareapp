@@ -3,6 +3,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
@@ -40,8 +41,8 @@ class RecordDetailScreen extends StatelessWidget {
                         const Spacer(),
                         Text(
                           formatClinicalDate(record.occurredAt),
-                          style: const TextStyle(
-                            color: AppColors.textSecondaryLight,
+                          style: TextStyle(
+                            color: context.textSecondary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -107,7 +108,7 @@ class RecordDetailScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(
-                              color: AppColors.borderLight.withValues(alpha: 0.5),
+                              color: context.borderColor.withValues(alpha: 0.5),
                             ),
                           ),
                         ),
@@ -123,7 +124,7 @@ class RecordDetailScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     'Reference: ${lab.refLow} – ${lab.refHigh} ${lab.unit}',
-                                    style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                    style: TextStyle(color: context.textSecondary, fontSize: 11),
                                   ),
                                 ],
                               ),
@@ -133,7 +134,7 @@ class RecordDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: lab.abnormalFlag ? AppColors.critical : AppColors.textPrimaryLight,
+                                color: lab.abnormalFlag ? AppColors.critical : context.textPrimary,
                               ),
                             ),
                             if (lab.abnormalFlag) ...[
@@ -164,7 +165,7 @@ class RecordDetailScreen extends StatelessWidget {
                           const Icon(Icons.picture_as_pdf_rounded, color: AppColors.critical, size: 20),
                           const SizedBox(width: AppSpacing.sm),
                           Text(
-                            'Parsed PDF Document Text (RQ1)',
+                            'Parsed Document Text',
                             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -176,15 +177,16 @@ class RecordDetailScreen extends StatelessWidget {
                         width: double.infinity,
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          color: AppColors.canvasLight,
+                          color: context.canvasColor,
                           borderRadius: BorderRadius.circular(AppRadius.md),
                         ),
                         child: Text(
                           record.extractedText!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'monospace',
                             fontSize: 12,
                             height: 1.5,
+                            color: context.textPrimary,
                           ),
                         ),
                       ),

@@ -6,12 +6,17 @@ import 'package:myhealth_ai/app/theme/app_spacing.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 
 /// Pill status badge for risk bands, appointment states, and clinical categories.
+///
+/// [backgroundColor]/[textColor] are optional — when omitted the badge
+/// resolves a neutral, theme-adaptive gray at build time instead of a
+/// hardcoded light-mode color, so "neutral" badges (Completed, Dismissed,
+/// Discharge…) still read correctly in dark mode.
 class ClinicalBadge extends StatelessWidget {
   const ClinicalBadge({
     super.key,
     required this.label,
-    required this.backgroundColor,
-    required this.textColor,
+    this.backgroundColor,
+    this.textColor,
     this.icon,
     this.pulsing = false,
   });
@@ -65,11 +70,7 @@ class ClinicalBadge extends StatelessWidget {
           icon: Icons.check_circle_outline_rounded,
         );
       case AppointmentStatus.completed:
-        return const ClinicalBadge(
-          label: 'Completed',
-          backgroundColor: Color(0x2071717A),
-          textColor: AppColors.textSecondaryLight,
-        );
+        return const ClinicalBadge(label: 'Completed');
       case AppointmentStatus.cancelled:
         return const ClinicalBadge(
           label: 'Cancelled',
@@ -128,11 +129,7 @@ class ClinicalBadge extends StatelessWidget {
           icon: Icons.vaccines_outlined,
         );
       case RecordType.dischargeSummary:
-        return const ClinicalBadge(
-          label: 'Discharge',
-          backgroundColor: Color(0x2071717A),
-          textColor: AppColors.textSecondaryLight,
-        );
+        return const ClinicalBadge(label: 'Discharge');
       case RecordType.referral:
         return const ClinicalBadge(
           label: 'Referral',
@@ -163,45 +160,45 @@ class ClinicalBadge extends StatelessWidget {
           textColor: AppColors.success,
         );
       case TaskStatus.dismissed:
-        return const ClinicalBadge(
-          label: 'Dismissed',
-          backgroundColor: Color(0x2071717A),
-          textColor: AppColors.textSecondaryLight,
-        );
+        return const ClinicalBadge(label: 'Dismissed');
     }
   }
 
   final String label;
-  final Color backgroundColor;
-  final Color textColor;
+  final Color? backgroundColor;
+  final Color? textColor;
   final IconData? icon;
   final bool pulsing;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedText = textColor ?? Theme.of(context).colorScheme.onSurfaceVariant;
+    final resolvedBackground =
+        backgroundColor ?? Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.12);
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm + 4,
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: resolvedBackground,
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (pulsing) ...[
-            _PulsingDot(color: textColor),
+            _PulsingDot(color: resolvedText),
             const SizedBox(width: 5),
           ] else if (icon != null) ...[
-            Icon(icon, size: 12, color: textColor),
+            Icon(icon, size: 12, color: resolvedText),
             const SizedBox(width: 4),
           ],
           Text(
             label,
             style: TextStyle(
-              color: textColor,
+              color: resolvedText,
               fontSize: 11,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.2,
