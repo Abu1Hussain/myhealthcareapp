@@ -87,6 +87,8 @@ def generate_synthetic_dataset(num_samples: int = 5000, random_state: int = 42) 
     return df
 
 if __name__ == "__main__":
+    import os
     df = generate_synthetic_dataset()
-    df.to_csv("tools/ml/appointment_dataset.csv", index=False)
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "appointment_dataset.csv")
+    df.to_csv(output_path, index=False)
     print(f"Generated {len(df)} samples. No-show rate: {df['no_show'].mean():.2%}")

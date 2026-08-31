@@ -34,7 +34,7 @@ class ClinicAnalyticsScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.sm),
               Row(
                 children: const [
-                  Expanded(child: _KpiCard(label: 'ML ROC-AUC', value: '0.785', change: 'Logistic Reg.', isGood: true)),
+                  Expanded(child: _KpiCard(label: 'ML ROC-AUC', value: '0.798', change: 'Logistic Reg.', isGood: true)),
                   SizedBox(width: AppSpacing.sm),
                   Expanded(child: _KpiCard(label: 'High-Risk Triage', value: '14.2%', change: '3-tier escalation', isGood: true)),
                 ],

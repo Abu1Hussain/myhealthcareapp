@@ -49,3 +49,4 @@ credentials.json
 tools/ml/venv/
 tools/ml/__pycache__/
 tools/ml/*.pyc
+tools/ml/appointment_dataset.csv

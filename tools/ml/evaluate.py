@@ -12,6 +12,10 @@ from sklearn.preprocessing import StandardScaler
 from generate_dataset import generate_synthetic_dataset
 from features import FEATURE_NAMES
 
+# Repo root, regardless of whether this script is invoked from the repo
+# root or from inside tools/ml/ (both are used in the project docs).
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 def evaluate_all():
     df = generate_synthetic_dataset(num_samples=5000, random_state=42)
     X = df[FEATURE_NAMES]
@@ -47,8 +51,9 @@ def evaluate_all():
     lead_acc = accuracy_score(y_test, lead_pred)
     lead_f1 = f1_score(y_test, lead_pred)
 
-    os.makedirs("docs", exist_ok=True)
-    report_path = "docs/ml_results.md"
+    docs_dir = os.path.join(PROJECT_ROOT, "docs")
+    os.makedirs(docs_dir, exist_ok=True)
+    report_path = os.path.join(docs_dir, "ml_results.md")
 
     with open(report_path, "w", encoding="utf-8") as f:
         f.write("# ML Appointment No-Show Prediction Evaluation (RQ2)\n\n")
