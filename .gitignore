@@ -1,0 +1,51 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# Web related
+
+# Symbol processing related
+symbols/
+
+# ⚠️ SECURITY: Never commit API keys or sensitive credentials
+*.env
+*.env.*
+*.key
+*.pem
+secrets.json
+api_keys.dart
+credentials.json
+.secure_storage/
+
+# Python virtualenv (for tools/ml)
+tools/ml/venv/
+tools/ml/__pycache__/
+tools/ml/*.pyc

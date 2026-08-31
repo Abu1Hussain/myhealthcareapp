@@ -1,0 +1,75 @@
+# Strict analysis options for MyHealth AI
+# Follows flutter-dart-code-review skill §15: strict-casts, strict-inference, strict-raw-types
+
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  strict-casts: true
+  strict-inference: true
+  strict-raw-types: true
+  errors:
+    missing_return: error
+    missing_required_param: error
+    invalid_annotation_target: ignore # freezed compatibility
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gr.dart"
+    - "build/**"
+    - ".dart_tool/**"
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+
+linter:
+  rules:
+    # Immutability & safety (flutter-dart-code-review §2)
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_locals: true
+    prefer_final_fields: true
+
+    # Import hygiene (flutter-dart-code-review §2: package imports)
+    always_use_package_imports: true
+
+    # Type safety
+    always_declare_return_types: true
+    avoid_dynamic_calls: true
+    avoid_returning_null_for_future: true
+
+    # Error handling (flutter-dart-code-review §2: no broad catches)
+    avoid_catches_without_on_clauses: true
+
+    # Logging (flutter-dart-code-review §2: no print)
+    avoid_print: true
+
+    # Async discipline
+    unawaited_futures: true
+
+    # General quality
+    prefer_single_quotes: true
+    sort_constructors_first: true
+    use_key_in_widget_constructors: true
+    sized_box_for_whitespace: true
+    avoid_unnecessary_containers: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+    unnecessary_lambdas: true
+    unnecessary_this: true
+    prefer_collection_literals: true
+    annotate_overrides: true
+    avoid_init_to_null: true
+    no_duplicate_case_values: true
+    avoid_empty_else: true
+    curly_braces_in_flow_control_structures: true
+    prefer_adjacent_string_concatenation: true
+    prefer_conditional_assignment: true
+    prefer_for_elements_to_map_fromIterable: true
+    prefer_if_null_operators: true
+    prefer_spread_collections: true
+    unnecessary_new: true
+    unnecessary_null_in_if_null_operators: true
+    unnecessary_string_interpolations: true
+    use_rethrow_when_possible: true
