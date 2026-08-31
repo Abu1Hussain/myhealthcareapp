@@ -9,10 +9,12 @@ import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
 import 'package:myhealth_ai/features/scheduling/scheduling_service.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/skeletal_shimmer.dart';
+import 'package:myhealth_ai/services/clinical/appointment_triage_service.dart';
 
 class BookingWizardScreen extends ConsumerStatefulWidget {
   const BookingWizardScreen({super.key});
@@ -72,14 +74,18 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
     final user = ref.read(currentUserProvider);
     if (user == null || _selectedDoctorId == null) return;
 
+    // Book (and score risk) for whoever is currently active — the
+    // guardian themselves, or a dependent they're managing.
+    final patient = ref.read(managedDependentProvider) ?? user;
+
     setState(() => _loadingSlots = true);
 
     final medsResult = await ref.read(vitalsRepositoryProvider)
-        .getMedicationsForPatient(user.id, activeOnly: true);
+        .getMedicationsForPatient(patient.id, activeOnly: true);
     final meds = medsResult.fold((l) => l, (_) => <Medication>[]);
 
     final apptResult = await ref.read(appointmentRepositoryProvider)
-        .getAppointmentsForPatient(user.id);
+        .getAppointmentsForPatient(patient.id);
     final appts = apptResult.fold((l) => l, (_) => <Appointment>[]);
     final lastVisit = appts
         .where((a) => a.status == AppointmentStatus.completed)
@@ -89,7 +95,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
     final schedulingService = ref.read(schedulingServiceProvider);
     final now = DateTime.now();
     final result = await schedulingService.getScoredSlots(
-      patient: user,
+      patient: patient,
       doctorId: _selectedDoctorId!,
       doctorName: _selectedDoctorName ?? '',
       departmentName: _selectedDepartment ?? '',
@@ -111,12 +117,13 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
   Future<void> _confirmBooking() async {
     final user = ref.read(currentUserProvider);
     if (user == null || _selectedSlot == null) return;
+    final patient = ref.read(managedDependentProvider) ?? user;
 
     setState(() => _isBooking = true);
 
     final apptRepo = ref.read(appointmentRepositoryProvider);
     final result = await apptRepo.bookAppointment(
-      patientId: user.id,
+      patientId: patient.id,
       staffId: _selectedSlot!.doctorId,
       departmentId: 1,
       slotStart: _selectedSlot!.slotStart,
@@ -135,7 +142,7 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
           slotStart: _selectedSlot!.slotStart,
           riskBand: _selectedSlot!.prediction.riskBand,
           appointmentId: appointment.id,
-          patientId: user.id,
+          patientId: patient.id,
         );
 
         Navigator.of(context).pop(true);
@@ -561,6 +568,30 @@ class _BookingWizardScreenState extends ConsumerState<BookingWizardScreen> {
             controller: _reasonController,
             decoration: const InputDecoration(labelText: 'Reason for Visit'),
             maxLines: 2,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          AnimatedBuilder(
+            animation: _reasonController,
+            builder: (context, _) {
+              final urgency = AppointmentTriageService.classify(_reasonController.text);
+              return Row(
+                children: [
+                  ClinicalBadge(
+                    label: '${urgency.label} priority',
+                    tone: urgency.tone,
+                    icon: urgency.icon,
+                    pulsing: urgency == AppointmentUrgency.urgent,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      urgency.description,
+                      style: TextStyle(color: context.textSecondary, fontSize: 11.5),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),

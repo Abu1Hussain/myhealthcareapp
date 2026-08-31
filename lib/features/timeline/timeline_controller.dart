@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
 
 class TimelineState {
   const TimelineState({
@@ -51,9 +52,10 @@ class TimelineController extends StateNotifier<TimelineState> {
 
     state = state.copyWith(isLoading: true, errorMessage: null);
 
+    final patientId = ref.read(managedDependentProvider)?.id ?? user.id;
     final recordRepo = ref.read(recordRepositoryProvider);
     final result = await recordRepo.getTimelineForPatient(
-      user.id,
+      patientId,
       filterType: state.selectedType,
       searchQuery: state.searchQuery,
       limit: 100,
@@ -82,5 +84,8 @@ class TimelineController extends StateNotifier<TimelineState> {
 
 final timelineControllerProvider =
     StateNotifierProvider<TimelineController, TimelineState>((ref) {
+  // Reconstruct (and reload) whenever the guardian switches between their
+  // own record and a managed dependent's.
+  ref.watch(managedDependentProvider);
   return TimelineController(ref);
 });

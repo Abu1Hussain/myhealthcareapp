@@ -54,4 +54,27 @@ abstract final class AppColors {
   static const Color aiSurfaceDark = Color(0xFF1E1B4B);  // indigo-950
   static const Color aiBorderLight = Color(0xFFE2E8F0);
   static const Color aiBorderDark = Color(0xFF4C1D95);
+
+  // ── Badge text-on-tint shades ────────────────────────────────────────
+  // ClinicalBadge renders small (11px) text on a ~12.5%-alpha fill of the
+  // matching accent color. Small text needs a real WCAG AA ratio of
+  // >=4.5:1 against what actually renders (the accent composited onto the
+  // card surface), not against the accent color alone — the plain accent
+  // constants above fall short of that (verified: e.g. success/warning
+  // land at ~2.0-2.5:1 on their own light-mode tint). These pairs were
+  // derived by adjusting lightness until the *composited* tint reaches
+  // >=4.5:1, checked separately for light and dark surfaces since the two
+  // directions (darken vs. lighten) diverge.
+  static const Color successTextLight = Color(0xFF0A7753);   // 4.64:1 on its own light tint
+  static const Color successTextDark = Color(0xFF10B981);    // 4.70:1 on its own dark tint
+  static const Color warningTextLight = Color(0xFF945F06);   // 4.54:1
+  static const Color warningTextDark = Color(0xFFF59E0B);    // 5.48:1
+  static const Color criticalTextLight = Color(0xFFCB1111);  // 4.65:1
+  static const Color criticalTextDark = Color(0xFFF37878);   // 4.50:1
+  static const Color infoTextLight = Color(0xFF0B5FE9);      // 4.56:1
+  static const Color infoTextDark = Color(0xFF6CA1F8);       // 4.55:1
+  static const Color primaryTextLight = Color(0xFF0A736A);   // 4.77:1
+  static const Color primaryTextDark = Color(0xFF10B5A6);    // 4.64:1
+  static const Color aiTextLight = Color(0xFF763FF4);        // 4.60:1
+  static const Color aiTextDark = Color(0xFFB191F9);         // 4.66:1
 }

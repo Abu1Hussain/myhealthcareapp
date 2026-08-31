@@ -9,6 +9,8 @@ import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
+import 'package:myhealth_ai/features/family/managing_dependent_banner.dart';
 import 'package:myhealth_ai/features/patient_home/patient_shell.dart';
 import 'package:myhealth_ai/features/patient_home/widgets/ai_summary_card.dart';
 import 'package:myhealth_ai/features/records/import_record_modal.dart';
@@ -19,6 +21,7 @@ import 'package:myhealth_ai/features/shared/quick_switch_user_dialog.dart';
 import 'package:myhealth_ai/features/shared/safety_banner.dart';
 import 'package:myhealth_ai/features/shared/skeletal_shimmer.dart';
 import 'package:myhealth_ai/features/shared/staggered_fade_slide.dart';
+import 'package:myhealth_ai/features/shared/theme_toggle_button.dart';
 import 'package:myhealth_ai/features/vitals/log_vitals_modal.dart';
 
 class PatientHomeScreen extends ConsumerWidget {
@@ -29,13 +32,22 @@ class PatientHomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) return const SizedBox.shrink();
 
-    final apptFuture = ref.watch(appointmentRepositoryProvider).getAppointmentsForPatient(user.id);
-    final medsFuture = ref.watch(vitalsRepositoryProvider).getMedicationsForPatient(user.id, activeOnly: true);
+    final managedDependent = ref.watch(managedDependentProvider);
+    final displayedUser = managedDependent ?? user;
+    final patientId = effectivePatientId(ref, user);
+
+    final apptFuture = ref.watch(appointmentRepositoryProvider).getAppointmentsForPatient(patientId);
+    final medsFuture = ref.watch(vitalsRepositoryProvider).getMedicationsForPatient(patientId, activeOnly: true);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome, ${user.fullName.split(' ').first}'),
+        title: Text(
+          managedDependent != null
+              ? "${displayedUser.fullName.split(' ').first}'s Health"
+              : 'Welcome, ${displayedUser.fullName.split(' ').first}',
+        ),
         actions: [
+          const ThemeToggleButton(),
           IconButton(
             tooltip: 'Quick Switch Account (Demo)',
             icon: const Icon(Icons.swap_horiz_rounded, color: AppColors.primaryTeal),
@@ -66,6 +78,11 @@ class PatientHomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
 
+              if (managedDependent != null) ...[
+                const ManagingDependentBanner(),
+                const SizedBox(height: AppSpacing.lg),
+              ],
+
               // Patient CPR & Profile Header Card
               StaggeredFadeSlide(
                 index: 1,
@@ -76,7 +93,7 @@ class PatientHomeScreen extends ConsumerWidget {
                         radius: 26,
                         backgroundColor: AppColors.primaryTeal.withValues(alpha: 0.15),
                         child: Text(
-                          user.fullName[0],
+                          displayedUser.fullName[0],
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -90,22 +107,22 @@ class PatientHomeScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.fullName,
+                              displayedUser.fullName,
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'CPR: ${user.nationalId} • Age ${user.age} • ${user.gender == 'M' ? 'Male' : 'Female'}',
+                              'CPR: ${displayedUser.nationalId} • Age ${displayedUser.age} • ${displayedUser.gender == 'M' ? 'Male' : 'Female'}',
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
                       ),
-                      if (user.patientProfile != null) ...[
+                      if (displayedUser.patientProfile != null) ...[
                         ClinicalBadge(
-                          label: user.patientProfile!.bloodType,
+                          label: displayedUser.patientProfile!.bloodType,
                           backgroundColor: AppColors.primaryTealSurface,
                           textColor: AppColors.primaryTeal,
                           icon: Icons.bloodtype_outlined,
@@ -145,7 +162,7 @@ class PatientHomeScreen extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
-                            builder: (_) => ImportRecordModal(patientId: user.id),
+                            builder: (_) => ImportRecordModal(patientId: patientId),
                           );
                         },
                       ),
@@ -160,7 +177,7 @@ class PatientHomeScreen extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
-                            builder: (_) => LogVitalsModal(patientId: user.id),
+                            builder: (_) => LogVitalsModal(patientId: patientId),
                           );
                         },
                       ),

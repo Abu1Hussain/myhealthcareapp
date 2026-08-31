@@ -133,7 +133,7 @@ void main() {
       expect(result.topRiskFactors.isNotEmpty, isTrue);
     });
 
-    test('Python-Dart numerical parity within 1e-6 precision', () {
+    test('Python-Dart numerical parity within 1e-4 (hand-derived sanity check)', () {
       // Mean vector features -> standardized features are 0.0 -> z = intercept -> prob = 1/(1 + e^(0.42))
       final meanFeatures = [14.0, 44.0, 0.8, 4.5, 0.14, 0.48, 2.15, 0.5, 0.4, 65.0, 11.85];
       final result = predictor.predict(meanFeatures);
@@ -154,6 +154,54 @@ void main() {
       stopwatch.stop();
       final avgMicroseconds = stopwatch.elapsedMicroseconds / 1000;
       expect(avgMicroseconds, lessThan(5000)); // < 5ms per call
+    });
+  });
+
+  group('P4-11 hard gate: Python <-> Dart parity on the real exported model', () {
+    // Coefficients, means, and stds copied verbatim from the model actually
+    // trained and exported by tools/ml/train_no_show.py into
+    // assets/models/no_show_model.json (not fabricated test fixtures).
+    final exported = NoShowPredictor.fromParameters(
+      coefficients: [
+        0.5979089539999131,
+        -0.32800446336617345,
+        0.4891148514012088,
+        -0.052887700119324525,
+        0.4287383184761416,
+        -0.33445760331295565,
+        -0.24760691125490253,
+        -0.2839571331629774,
+        0.17388107743345607,
+        0.1434506127730605,
+        0.1296992163617419,
+      ],
+      intercept: -0.2201938118346692,
+      means: [12.9215, 44.11425, 0.818, 4.477, 0.13894762416768408, 0.49625, 2.28625, 0.50725, 0.4045, 63.82725, 11.9375],
+      stds: [
+        13.408181746605317,
+        16.523216906447125,
+        0.900208864653087,
+        3.3453656003492354,
+        0.16134064272802814,
+        0.49998593730224056,
+        2.348469914114294,
+        0.4999474347368931,
+        0.49079501831212596,
+        62.75815012759299,
+        2.7285699093114695,
+      ],
+    );
+
+    test('matches the reference probability computed by the trained Python model within 1e-6', () {
+      // Reference value computed in Python from the same exported
+      // coefficients/means/stds for this exact feature vector:
+      //   z = 2.4431256554761704
+      //   probability = 0.9200572877027284
+      final features = [21.0, 35.0, 2.0, 5.0, 0.25, 0.0, 1.0, 0.0, 1.0, 120.0, 14.0];
+      final result = exported.predict(features);
+
+      const expectedProb = 0.9200572877027284;
+      expect((result.probability - expectedProb).abs(), lessThan(1e-6));
     });
   });
 }

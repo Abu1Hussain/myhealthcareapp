@@ -9,11 +9,15 @@ import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
+import 'package:myhealth_ai/features/family/managing_dependent_banner.dart';
 import 'package:myhealth_ai/features/scheduling/booking_wizard_screen.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/empty_state_widget.dart';
 import 'package:myhealth_ai/features/shared/skeletal_shimmer.dart';
+import 'package:myhealth_ai/features/shared/urgency_legend.dart';
+import 'package:myhealth_ai/services/clinical/appointment_triage_service.dart';
 
 class PatientAppointmentsScreen extends ConsumerWidget {
   const PatientAppointmentsScreen({super.key});
@@ -23,7 +27,9 @@ class PatientAppointmentsScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) return const SizedBox.shrink();
 
-    final apptFuture = ref.watch(appointmentRepositoryProvider).getAppointmentsForPatient(user.id);
+    final managedDependent = ref.watch(managedDependentProvider);
+    final patientId = effectivePatientId(ref, user);
+    final apptFuture = ref.watch(appointmentRepositoryProvider).getAppointmentsForPatient(patientId);
 
     return Scaffold(
       appBar: AppBar(
@@ -86,6 +92,12 @@ class PatientAppointmentsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (managedDependent != null) ...[
+                    const ManagingDependentBanner(),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+                  const UrgencyLegend(),
+                  const SizedBox(height: AppSpacing.lg),
                   if (upcoming.isNotEmpty) ...[
                     Text(
                       'Upcoming',
@@ -154,16 +166,26 @@ class _AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final urgency = AppointmentTriageService.classify(appointment.reasonText);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: DoubleBezelCard(
+        accentColor: urgency.accentColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
               children: [
+                ClinicalBadge(
+                  label: urgency.label,
+                  tone: urgency.tone,
+                  icon: urgency.icon,
+                  pulsing: urgency == AppointmentUrgency.urgent,
+                ),
                 ClinicalBadge.appointmentStatus(appointment.status),
-                const Spacer(),
                 if (appointment.riskBand != null) ClinicalBadge.riskBand(appointment.riskBand!),
               ],
             ),

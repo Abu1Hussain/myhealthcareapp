@@ -8,6 +8,8 @@ import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/family/family_controller.dart';
+import 'package:myhealth_ai/features/family/managing_dependent_banner.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/empty_state_widget.dart';
@@ -21,7 +23,8 @@ class MedicationsScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) return const SizedBox.shrink();
 
-    final medsFuture = ref.watch(vitalsRepositoryProvider).getMedicationsForPatient(user.id);
+    final patientId = effectivePatientId(ref, user);
+    final medsFuture = ref.watch(vitalsRepositoryProvider).getMedicationsForPatient(patientId);
 
     return Scaffold(
       appBar: AppBar(
