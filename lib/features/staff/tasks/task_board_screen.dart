@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -169,7 +170,7 @@ class _TaskBoardScreenState extends ConsumerState<TaskBoardScreen> {
                                     const SizedBox(width: 8),
                                     Text(
                                       'Due: ${formatClinicalDate(task.dueAt)}',
-                                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight),
+                                      style: TextStyle(fontSize: 12, color: context.textSecondary),
                                     ),
                                     const Spacer(),
                                     _buildTaskStatusBadge(task.status),
@@ -207,9 +208,9 @@ class _TaskBoardScreenState extends ConsumerState<TaskBoardScreen> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: AppColors.aiSurfaceLight,
+                                      color: context.aiSurface,
                                       borderRadius: BorderRadius.circular(AppRadius.xs),
-                                      border: Border.all(color: AppColors.aiBorderLight),
+                                      border: Border.all(color: context.aiBorder),
                                     ),
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,7 +220,7 @@ class _TaskBoardScreenState extends ConsumerState<TaskBoardScreen> {
                                         Expanded(
                                           child: Text(
                                             task.aiRationale!,
-                                            style: const TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                                            style: TextStyle(fontSize: 11, color: context.textPrimary),
                                           ),
                                         ),
                                       ],
@@ -271,13 +272,13 @@ class _TaskBoardScreenState extends ConsumerState<TaskBoardScreen> {
   Widget _buildTaskStatusBadge(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return const ClinicalBadge(label: 'Pending', backgroundColor: AppColors.borderLight, textColor: AppColors.textSecondaryLight);
+        return const ClinicalBadge(label: 'Pending');
       case TaskStatus.inProgress:
         return ClinicalBadge(label: 'In Progress', backgroundColor: AppColors.info.withValues(alpha: 0.15), textColor: AppColors.info);
       case TaskStatus.completed:
         return ClinicalBadge(label: 'Completed', backgroundColor: AppColors.success.withValues(alpha: 0.15), textColor: AppColors.success);
       case TaskStatus.dismissed:
-        return const ClinicalBadge(label: 'Dismissed', backgroundColor: AppColors.borderLight, textColor: AppColors.textSecondaryLight);
+        return const ClinicalBadge(label: 'Dismissed');
     }
   }
 }

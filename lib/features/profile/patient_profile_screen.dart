@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/quick_switch_user_dialog.dart';
@@ -54,12 +55,12 @@ class PatientProfileScreen extends ConsumerWidget {
                           const SizedBox(height: 2),
                           Text(
                             user.email,
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13),
+                            style: TextStyle(color: context.textSecondary, fontSize: 13),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Phone: ${user.phone}',
-                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                            style: TextStyle(color: context.textSecondary, fontSize: 12),
                           ),
                         ],
                       ),
@@ -159,7 +160,7 @@ class _ProfileRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13)),
+          Text(label, style: TextStyle(color: context.textSecondary, fontSize: 13)),
           Flexible(
             child: Text(
               value,

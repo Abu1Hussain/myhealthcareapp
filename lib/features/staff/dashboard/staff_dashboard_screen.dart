@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -127,7 +128,7 @@ class _StaffDashboardScreenState extends ConsumerState<StaffDashboardScreen> {
                       ),
                       Text(
                         formatClinicalDate(_selectedDate),
-                        style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 13),
+                        style: TextStyle(color: context.textSecondary, fontSize: 13),
                       ),
                     ],
                   ),
@@ -231,7 +232,7 @@ class _StaffDashboardScreenState extends ConsumerState<StaffDashboardScreen> {
                                           ),
                                           Text(
                                             appt.reasonText.isNotEmpty ? appt.reasonText : 'Routine consultation',
-                                            style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                            style: TextStyle(color: context.textSecondary, fontSize: 12),
                                           ),
                                         ],
                                       ),

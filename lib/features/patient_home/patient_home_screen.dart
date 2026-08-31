@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -210,7 +211,7 @@ class PatientHomeScreen extends ConsumerWidget {
                     return DoubleBezelCard(
                       child: Row(
                         children: [
-                          const Icon(Icons.event_available_rounded, size: 36, color: AppColors.textTertiaryLight),
+                          Icon(Icons.event_available_rounded, size: 36, color: context.textTertiary),
                           const SizedBox(width: AppSpacing.md),
                           const Expanded(
                             child: Text('No upcoming appointments scheduled.'),
@@ -325,7 +326,7 @@ class PatientHomeScreen extends ConsumerWidget {
                                     ),
                                     Text(
                                       m.frequency,
-                                      style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                      style: TextStyle(color: context.textSecondary, fontSize: 12),
                                     ),
                                   ],
                                 ),

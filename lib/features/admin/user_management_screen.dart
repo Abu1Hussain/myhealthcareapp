@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
@@ -86,11 +87,11 @@ class _UserManagementScreenState extends ConsumerState<UserManagementScreen> {
                               Text(user.fullName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                               Text(
                                 '${profile?.jobTitle ?? "Clinician"} • ${profile?.specialty ?? "General"}',
-                                style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                style: TextStyle(color: context.textSecondary, fontSize: 12),
                               ),
                               Text(
                                 'Email: ${user.email} • License: ${profile?.licenseNo ?? "N/A"}',
-                                style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                style: TextStyle(color: context.textSecondary, fontSize: 11),
                               ),
                             ],
                           ),

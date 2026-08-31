@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 
@@ -80,7 +81,7 @@ class _DoctorScheduleScreenState extends ConsumerState<DoctorScheduleScreen> {
                     const SizedBox(height: 6),
                     Text(
                       'Department: ${staff.staffProfile?.specialty ?? "General Practice"} • Room ${staff.staffProfile?.jobTitle ?? "A-101"}',
-                      style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                      style: TextStyle(color: context.textSecondary, fontSize: 12),
                     ),
                     const Divider(height: 20),
                     Row(
@@ -130,12 +131,12 @@ class _DoctorScheduleScreenState extends ConsumerState<DoctorScheduleScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
-                                  color: isWeekend ? AppColors.textSecondaryLight : AppColors.textPrimaryLight,
+                                  color: isWeekend ? context.textSecondary : context.textPrimary,
                                 ),
                               ),
                               Text(
                                 isWorking ? '08:00 – 16:00 (16 available slots/day)' : 'Day Off / Closed',
-                                style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                                style: TextStyle(color: context.textSecondary, fontSize: 12),
                               ),
                             ],
                           ),

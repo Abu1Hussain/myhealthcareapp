@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/timeline/timeline_controller.dart';
@@ -276,14 +277,14 @@ Physician: Dr. Ahmed Al-Khalifa, MD, Internal Medicine
                   constraints: const BoxConstraints(maxHeight: 140),
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.canvasLight,
+                    color: context.canvasColor,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.borderLight),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: SingleChildScrollView(
                     child: Text(
                       _extractedText!,
-                      style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                      style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: context.textPrimary),
                     ),
                   ),
                 ),

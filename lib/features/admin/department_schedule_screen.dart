@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
@@ -65,16 +66,16 @@ class DepartmentScheduleScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(dept.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  Text(dept.description, style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 12)),
+                                  Text(dept.description, style: TextStyle(color: context.textSecondary, fontSize: 12)),
                                 ],
                               ),
                             ),
                           ],
                         ),
                         const Divider(height: 20),
-                        const Text(
+                        Text(
                           'Weekly Clinic Availability: Sun – Thu • 08:00 – 16:00 (30-min slots)',
-                          style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 12),
+                          style: TextStyle(color: context.textSecondary, fontSize: 12),
                         ),
                       ],
                     ),

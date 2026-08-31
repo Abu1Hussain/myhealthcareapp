@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -42,7 +43,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       case 'BOOK_APPOINTMENT':
         return AppColors.info;
       default:
-        return AppColors.textSecondaryLight;
+        return context.textSecondary;
     }
   }
 
@@ -135,14 +136,14 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                                     ),
                                     Text(
                                       'Actor: ${entry.actorName ?? "User #${entry.actorUserId ?? 'Sys'}"}',
-                                      style: const TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                      style: TextStyle(color: context.textSecondary, fontSize: 11),
                                     ),
                                   ],
                                 ),
                               ),
                               Text(
                                 '${formatClinicalDate(entry.timestamp)} ${formatTime24h(entry.timestamp)}',
-                                style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                                style: TextStyle(fontSize: 11, color: context.textSecondary),
                               ),
                             ],
                           ),

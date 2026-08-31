@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
 
@@ -133,7 +134,7 @@ class _PrescriptionDialogState extends ConsumerState<PrescriptionDialog> {
                   // Quick medication chips
                   Text(
                     'Common Formularies',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textSecondaryLight),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600, color: context.textSecondary),
                   ),
                   const SizedBox(height: 6),
                   Wrap(
