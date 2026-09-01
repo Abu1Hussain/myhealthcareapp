@@ -38,7 +38,7 @@ void main() {
         ),
       );
 
-      expect(find.text('High Risk'), findsOneWidget);
+      expect(find.text('High risk'), findsOneWidget);
       expect(find.text('Booked'), findsOneWidget);
       expect(find.text('Consultation'), findsOneWidget);
     });
@@ -52,8 +52,8 @@ void main() {
         ),
       );
 
-      expect(find.textContaining('AI-generated — informational only'), findsOneWidget);
-      expect(find.byIcon(Icons.auto_awesome_rounded), findsOneWidget);
+      expect(find.textContaining('AI summaries assist, never diagnose'), findsOneWidget);
+      expect(find.byIcon(Icons.verified_outlined), findsOneWidget);
     });
 
     testWidgets('EmptyStateWidget renders title, description and triggers action', (tester) async {
