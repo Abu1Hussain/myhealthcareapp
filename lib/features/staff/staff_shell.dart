@@ -2,7 +2,6 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/features/staff/analytics/clinic_analytics_screen.dart';
 import 'package:myhealth_ai/features/staff/dashboard/staff_dashboard_screen.dart';
 import 'package:myhealth_ai/features/staff/patients/patient_search_screen.dart';
@@ -18,6 +17,7 @@ class StaffShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(staffNavIndexProvider);
     final isDesktop = MediaQuery.sizeOf(context).width >= 768;
+    final hairline = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.16);
 
     const screens = [
       StaffDashboardScreen(),
@@ -42,12 +42,9 @@ class StaffShell extends ConsumerWidget {
                         onDestinationSelected: (index) =>
                             ref.read(staffNavIndexProvider.notifier).state = index,
                         labelType: NavigationRailLabelType.all,
-                        leading: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: CircleAvatar(
-                            backgroundColor: AppColors.primaryTeal.withValues(alpha: 0.15),
-                            child: const Icon(Icons.local_hospital_rounded, color: AppColors.primaryTeal),
-                          ),
+                        leading: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.0),
+                          child: Icon(Icons.local_hospital_outlined, size: 24),
                         ),
                         destinations: const [
                           NavigationRailDestination(
@@ -77,7 +74,7 @@ class StaffShell extends ConsumerWidget {
                 );
               },
             ),
-            const VerticalDivider(thickness: 1, width: 1),
+            Container(width: 1, color: hairline),
             Expanded(child: screens[currentIndex]),
           ],
         ),
@@ -89,32 +86,37 @@ class StaffShell extends ConsumerWidget {
         index: currentIndex,
         children: screens,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) => ref.read(staffNavIndexProvider.notifier).state = index,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today_rounded),
-            label: 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_outlined),
-            activeIcon: Icon(Icons.assignment_rounded),
-            label: 'Tasks',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline_rounded),
-            activeIcon: Icon(Icons.people_rounded),
-            label: 'Patients',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.insights_outlined),
-            activeIcon: Icon(Icons.insights_rounded),
-            label: 'Analytics',
-          ),
-        ],
+      bottomNavigationBar: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: hairline)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) => ref.read(staffNavIndexProvider.notifier).state = index,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today_outlined),
+              activeIcon: Icon(Icons.calendar_today_rounded),
+              label: 'Schedule',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.assignment_outlined),
+              activeIcon: Icon(Icons.assignment_rounded),
+              label: 'Tasks',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people_outline_rounded),
+              activeIcon: Icon(Icons.people_rounded),
+              label: 'Patients',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.insights_outlined),
+              activeIcon: Icon(Icons.insights_rounded),
+              label: 'Analytics',
+            ),
+          ],
+        ),
       ),
     );
   }

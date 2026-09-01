@@ -1,10 +1,11 @@
 library;
 
+import 'dart:ui' show FontFeature;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
-import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/core/di.dart';
 import 'package:myhealth_ai/core/utils/date_utils.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
@@ -12,6 +13,7 @@ import 'package:myhealth_ai/features/auth/auth_controller.dart';
 import 'package:myhealth_ai/features/family/family_controller.dart';
 import 'package:myhealth_ai/features/family/managing_dependent_banner.dart';
 import 'package:myhealth_ai/features/scheduling/booking_wizard_screen.dart';
+import 'package:myhealth_ai/features/shared/broadsheet_bits.dart';
 import 'package:myhealth_ai/features/shared/clinical_badge.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 import 'package:myhealth_ai/features/shared/empty_state_widget.dart';
@@ -27,6 +29,7 @@ class PatientAppointmentsScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     if (user == null) return const SizedBox.shrink();
 
+    final theme = Theme.of(context);
     final managedDependent = ref.watch(managedDependentProvider);
     final patientId = effectivePatientId(ref, user);
     final apptFuture = ref.watch(appointmentRepositoryProvider).getAppointmentsForPatient(patientId);
@@ -80,12 +83,13 @@ class PatientAppointmentsScreen extends ConsumerWidget {
               );
             }
 
-            // Separate upcoming and past
             final now = DateTime.now();
             final upcoming = appointments.where((a) =>
-                a.slotStart.isAfter(now) && a.status == AppointmentStatus.booked).toList();
+                a.slotStart.isAfter(now) && a.status == AppointmentStatus.booked).toList()
+              ..sort((a, b) => a.slotStart.compareTo(b.slotStart));
             final past = appointments.where((a) =>
-                a.slotStart.isBefore(now) || a.status != AppointmentStatus.booked).toList();
+                a.slotStart.isBefore(now) || a.status != AppointmentStatus.booked).toList()
+              ..sort((a, b) => b.slotStart.compareTo(a.slotStart));
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.pagePadding),
@@ -99,9 +103,14 @@ class PatientAppointmentsScreen extends ConsumerWidget {
                   const UrgencyLegend(),
                   const SizedBox(height: AppSpacing.lg),
                   if (upcoming.isNotEmpty) ...[
-                    Text(
-                      'Upcoming',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    SectionHead(
+                      title: 'Upcoming',
+                      trailing: Text(
+                        '${upcoming.length}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     ...upcoming.map((a) => _AppointmentCard(
@@ -109,15 +118,20 @@ class PatientAppointmentsScreen extends ConsumerWidget {
                       isUpcoming: true,
                       onCancel: () => _cancelAppointment(context, ref, a),
                     )),
-                    const SizedBox(height: AppSpacing.xl),
+                    const SizedBox(height: AppSpacing.xxl),
                   ],
                   if (past.isNotEmpty) ...[
-                    Text(
-                      'Past & Cancelled',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    SectionHead(
+                      title: 'Past & Cancelled',
+                      trailing: Text(
+                        '${past.length}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    ...past.take(10).map((a) => _AppointmentCard(
+                    ...past.take(15).map((a) => _AppointmentCard(
                       appointment: a,
                       isUpcoming: false,
                     )),
@@ -141,7 +155,7 @@ class PatientAppointmentsScreen extends ConsumerWidget {
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Keep')),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Cancel It', style: TextStyle(color: AppColors.critical)),
+            child: const Text('Cancel It', style: TextStyle(color: AppColors.magentaInk)),
           ),
         ],
       ),
@@ -166,6 +180,7 @@ class _AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final urgency = AppointmentTriageService.classify(appointment.reasonText);
 
     return Padding(
@@ -192,18 +207,25 @@ class _AppointmentCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               appointment.doctorName ?? 'Consultant Physician',
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
               '${formatClinicalDate(appointment.slotStart)} at ${formatTime24h(appointment.slotStart)}',
-              style: const TextStyle(color: AppColors.primaryTeal, fontWeight: FontWeight.w600, fontSize: 13),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.brightness == Brightness.dark ? AppColors.accent300 : AppColors.accent700,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
             if (appointment.reasonText.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
                 'Reason: ${appointment.reasonText}',
-                style: TextStyle(color: context.textSecondary, fontSize: 12),
+                style: theme.textTheme.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             ],
             if (isUpcoming) ...[
@@ -217,15 +239,15 @@ class _AppointmentCard extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const BookingWizardScreen()),
                       );
                     },
-                    icon: const Icon(Icons.edit_calendar_rounded, size: 16, color: AppColors.primaryTeal),
-                    label: const Text('Reschedule', style: TextStyle(color: AppColors.primaryTeal, fontSize: 12)),
+                    icon: const Icon(Icons.edit_calendar_outlined, size: 16),
+                    label: const Text('Reschedule', style: TextStyle(fontSize: 12)),
                   ),
                   const SizedBox(width: 8),
                   if (onCancel != null)
                     TextButton.icon(
                       onPressed: onCancel,
-                      icon: const Icon(Icons.cancel_outlined, size: 16, color: AppColors.critical),
-                      label: const Text('Cancel', style: TextStyle(color: AppColors.critical, fontSize: 12)),
+                      icon: const Icon(Icons.cancel_outlined, size: 16, color: AppColors.magentaInk),
+                      label: const Text('Cancel', style: TextStyle(color: AppColors.magentaInk, fontSize: 12)),
                     ),
                 ],
               ),

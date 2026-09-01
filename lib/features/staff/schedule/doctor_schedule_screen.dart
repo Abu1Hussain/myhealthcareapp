@@ -1,11 +1,13 @@
 library;
 
+import 'dart:ui' show FontFeature;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
-import 'package:myhealth_ai/app/theme/context_colors.dart';
 import 'package:myhealth_ai/features/auth/auth_controller.dart';
+import 'package:myhealth_ai/features/shared/broadsheet_bits.dart';
 import 'package:myhealth_ai/features/shared/double_bezel_card.dart';
 
 class DoctorScheduleScreen extends ConsumerStatefulWidget {
@@ -54,40 +56,58 @@ class _DoctorScheduleScreenState extends ConsumerState<DoctorScheduleScreen> {
     final staff = ref.watch(currentUserProvider);
     if (staff == null) return const SizedBox.shrink();
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Doctor Schedule & Availability'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.pagePadding),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xxxl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Masthead Profile Card
               DoubleBezelCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.schedule_rounded, color: AppColors.primaryTeal),
+                        Icon(
+                          Icons.schedule_rounded,
+                          size: 20,
+                          color: isDark ? AppColors.accent300 : AppColors.accent700,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          '${staff.fullName} • Clinic Schedule',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          '${staff.fullName} · Clinic Schedule',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
-                      'Department: ${staff.staffProfile?.specialty ?? "General Practice"} • Room ${staff.staffProfile?.jobTitle ?? "A-101"}',
-                      style: TextStyle(color: context.textSecondary, fontSize: 12),
+                      'Department: ${staff.staffProfile?.specialty ?? "General Practice"} · Room ${staff.staffProfile?.jobTitle ?? "A-101"}',
+                      style: theme.textTheme.bodySmall,
                     ),
-                    const Divider(height: 20),
+                    const SizedBox(height: AppSpacing.md),
+                    const RowRule(),
+                    const SizedBox(height: AppSpacing.sm),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Consultation Slot Duration', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                        Text(
+                          'Consultation Slot Duration',
+                          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                        ),
                         DropdownButton<int>(
                           value: _slotDurationMinutes,
                           items: const [
@@ -105,53 +125,71 @@ class _DoctorScheduleScreenState extends ConsumerState<DoctorScheduleScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.xxl),
 
-              Text(
-                'Weekly Working Days (Bahrain Working Week)',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+              const SectionHead(
+                title: 'Weekly Working Days',
+                trailing: Eyebrow('Bahrain standard week'),
               ),
               const SizedBox(height: AppSpacing.sm),
 
-              ..._workingDays.keys.map((day) {
-                final isWorking = _workingDays[day]!;
-                final isWeekend = day == DateTime.friday || day == DateTime.saturday;
+              DoubleBezelCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: _workingDays.keys.map((day) {
+                    final isWorking = _workingDays[day]!;
+                    final isWeekend = day == DateTime.friday || day == DateTime.saturday;
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: DoubleBezelCard(
-                    child: Row(
+                    return Column(
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                          child: Row(
                             children: [
-                              Text(
-                                _weekdayName(day),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: isWeekend ? context.textSecondary : context.textPrimary,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _weekdayName(day),
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: isWeekend
+                                            ? theme.colorScheme.onSurfaceVariant
+                                            : theme.colorScheme.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      isWorking
+                                          ? '08:00 – 16:00 (${(8 * 60 / _slotDurationMinutes).round()} slots/day)'
+                                          : 'Day Off / Closed',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                isWorking ? '08:00 – 16:00 (16 available slots/day)' : 'Day Off / Closed',
-                                style: TextStyle(color: context.textSecondary, fontSize: 12),
+                              Switch(
+                                value: isWorking,
+                                activeThumbColor: isDark ? AppColors.accent400 : AppColors.cyanInk,
+                                onChanged: (val) {
+                                  setState(() => _workingDays[day] = val);
+                                },
                               ),
                             ],
                           ),
                         ),
-                        Switch(
-                          value: isWorking,
-                          onChanged: (val) {
-                            setState(() => _workingDays[day] = val);
-                          },
-                        ),
+                        if (day != _workingDays.keys.last) const RowRule(),
                       ],
-                    ),
-                  ),
-                );
-              }),
+                    );
+                  }).toList(),
+                ),
+              ),
             ],
           ),
         ),
