@@ -2,6 +2,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:myhealth_ai/app/theme/app_motion.dart';
+import 'package:myhealth_ai/app/theme/reduced_motion.dart';
 import 'package:myhealth_ai/app/theme/theme_mode_controller.dart';
 
 /// Compact light/dark toggle for app bars — a single tap flips the app's
@@ -15,16 +17,34 @@ class ThemeToggleButton extends ConsumerWidget {
     final platformBrightness = MediaQuery.platformBrightnessOf(context);
     final isDark = mode == ThemeMode.dark ||
         (mode == ThemeMode.system && platformBrightness == Brightness.dark);
+    final reduce = shouldReduceMotion(context);
 
     return IconButton(
       tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
       onPressed: () => ref.read(themeModeProvider.notifier).toggle(platformBrightness),
       icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 320),
-        transitionBuilder: (child, animation) => RotationTransition(
-          turns: Tween<double>(begin: 0.75, end: 1.0).animate(animation),
-          child: FadeTransition(opacity: animation, child: ScaleTransition(scale: animation, child: child)),
-        ),
+        duration: reduce ? Duration.zero : AppMotion.themeSwitch,
+        switchInCurve: AppMotion.easeOut,
+        switchOutCurve: AppMotion.easeOut,
+        transitionBuilder: (child, animation) {
+          if (reduce) {
+            return FadeTransition(opacity: animation, child: child);
+          }
+          return RotationTransition(
+            turns: Tween<double>(begin: 0.85, end: 1.0).animate(
+              CurvedAnimation(parent: animation, curve: AppMotion.easeOut),
+            ),
+            child: FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+                  CurvedAnimation(parent: animation, curve: AppMotion.easeOut),
+                ),
+                child: child,
+              ),
+            ),
+          );
+        },
         child: Icon(
           isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
           key: ValueKey(isDark),

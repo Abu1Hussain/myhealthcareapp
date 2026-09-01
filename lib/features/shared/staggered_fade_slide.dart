@@ -1,38 +1,42 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:myhealth_ai/app/theme/app_motion.dart';
+import 'package:myhealth_ai/app/theme/reduced_motion.dart';
 
 /// Waterfall reveal for list and grid items.
 ///
-/// The old 25ms step was too tight to read as a cascade — items effectively
-/// arrived together. 70ms with a spring-weighted curve reads as one
-/// deliberate sweep down the list, which is what the motion was for.
+/// Items enter with a gentle opacity fade and subtle slide up.
+/// Total animation duration is strictly capped at [AppMotion.staggerMaxDurationMs]
+/// so even long feeds with 20+ items finish animating promptly.
+/// When [shouldReduceMotion] is true, position movement is bypassed.
 class StaggeredFadeSlide extends StatelessWidget {
   const StaggeredFadeSlide({
     super.key,
     required this.index,
     required this.child,
-    this.baseDelayMs = 70,
-    this.maxDelayMs = 420,
-    this.slideDistance = 16.0,
+    this.baseDelayMs = AppMotion.staggerStepMs,
+    this.slideDistance = AppMotion.staggerSlideDistance,
   });
 
   final int index;
   final Widget child;
   final int baseDelayMs;
-  final int maxDelayMs;
   final double slideDistance;
-
-  static const Curve _curve = Cubic(0.19, 0.86, 0.24, 1);
 
   @override
   Widget build(BuildContext context) {
-    final durationMs = 420 + (index * baseDelayMs).clamp(0, maxDelayMs);
+    if (shouldReduceMotion(context)) {
+      return child;
+    }
+
+    final durationMs = (AppMotion.staggerBaseMs + (index * baseDelayMs))
+        .clamp(AppMotion.staggerBaseMs, AppMotion.staggerMaxDurationMs);
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: durationMs),
-      curve: _curve,
+      curve: AppMotion.easeOut,
       builder: (context, progress, child) {
         return Opacity(
           opacity: progress.clamp(0.0, 1.0),

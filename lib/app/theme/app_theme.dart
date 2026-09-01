@@ -123,6 +123,8 @@ abstract final class AppTheme {
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: BorderSide(color: colorScheme.error),
         ),
+        errorMaxLines: 2,
+        helperMaxLines: 2,
         labelStyle: textTheme.bodySmall?.copyWith(
           fontSize: 12,
           color: colorScheme.onSurfaceVariant,
@@ -268,10 +270,13 @@ abstract final class AppTheme {
 
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: colorScheme.onSurface,
-        contentTextStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.surface),
+        backgroundColor: isDark ? AppColors.surfaceElevatedDark : colorScheme.onSurface,
+        contentTextStyle: textTheme.bodyMedium?.copyWith(
+          color: isDark ? colorScheme.onSurface : colorScheme.surface,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
+          side: isDark ? BorderSide(color: hairline) : BorderSide.none,
         ),
       ),
 
@@ -281,6 +286,7 @@ abstract final class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
+          side: isDark ? BorderSide(color: hairline) : BorderSide.none,
         ),
         titleTextStyle: textTheme.headlineMedium,
         contentTextStyle: textTheme.bodyMedium,
@@ -292,6 +298,7 @@ abstract final class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
+          side: isDark ? BorderSide(color: hairline) : BorderSide.none,
         ),
       ),
 

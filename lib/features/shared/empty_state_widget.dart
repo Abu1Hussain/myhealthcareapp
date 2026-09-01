@@ -1,7 +1,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:myhealth_ai/app/theme/app_motion.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/reduced_motion.dart';
 
 /// Empty state — flush left, set in the serif, no tinted circle.
 ///
@@ -27,8 +29,9 @@ class EmptyStateWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final reduce = shouldReduceMotion(context);
 
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.xxxl,
@@ -37,7 +40,7 @@ class EmptyStateWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 26, color: theme.colorScheme.onSurfaceVariant),
+          Icon(icon, size: 24, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(height: AppSpacing.md),
           Text(
             title,
@@ -62,6 +65,21 @@ class EmptyStateWidget extends StatelessWidget {
           ],
         ],
       ),
+    );
+
+    if (reduce) return content;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: 1.0),
+      duration: AppMotion.regular,
+      curve: AppMotion.easeOut,
+      builder: (context, progress, child) {
+        return Opacity(
+          opacity: progress.clamp(0.0, 1.0),
+          child: child,
+        );
+      },
+      child: content,
     );
   }
 }

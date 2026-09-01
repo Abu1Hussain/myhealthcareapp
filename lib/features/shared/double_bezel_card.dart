@@ -2,7 +2,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
+import 'package:myhealth_ai/app/theme/app_motion.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/reduced_motion.dart';
 
 /// A block of content on the page.
 ///
@@ -54,8 +56,8 @@ class _DoubleBezelCardState extends State<DoubleBezelCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _press = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 110),
-    reverseDuration: const Duration(milliseconds: 200),
+    duration: AppMotion.pressFeedback,
+    reverseDuration: AppMotion.pressFeedbackReverse,
     lowerBound: 0.988,
     upperBound: 1.0,
     value: 1.0,
@@ -117,18 +119,24 @@ class _DoubleBezelCardState extends State<DoubleBezelCard>
 
     if (widget.onTap == null) return block;
 
+    final reduce = shouldReduceMotion(context);
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
-        onTapDown: (_) => _press.animateTo(0.988, curve: Curves.easeOutQuad),
+        onTapDown: (_) {
+          if (!reduce) _press.animateTo(0.988, curve: AppMotion.easePress);
+        },
         onTapUp: (_) {
-          _press.animateTo(1.0, curve: Curves.easeOutBack);
+          if (!reduce) _press.animateTo(1.0, curve: AppMotion.easePressRelease);
           widget.onTap?.call();
         },
-        onTapCancel: () => _press.animateTo(1.0, curve: Curves.easeOutBack),
-        child: ScaleTransition(scale: _press, child: block),
+        onTapCancel: () {
+          if (!reduce) _press.animateTo(1.0, curve: AppMotion.easePressRelease);
+        },
+        child: reduce ? block : ScaleTransition(scale: _press, child: block),
       ),
     );
   }

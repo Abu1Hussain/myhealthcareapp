@@ -2,7 +2,9 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:myhealth_ai/app/theme/app_colors.dart';
+import 'package:myhealth_ai/app/theme/app_motion.dart';
 import 'package:myhealth_ai/app/theme/app_spacing.dart';
+import 'package:myhealth_ai/app/theme/reduced_motion.dart';
 import 'package:myhealth_ai/domain/entities/models.dart';
 
 /// Semantic badge tone.
@@ -185,7 +187,7 @@ class _PulsingDot extends StatefulWidget {
 class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1900),
+    duration: AppMotion.pulse,
   )..repeat(reverse: true);
 
   @override
@@ -196,11 +198,19 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
 
   @override
   Widget build(BuildContext context) {
-    final curve = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
+    if (shouldReduceMotion(context)) {
+      return Container(
+        width: 7,
+        height: 7,
+        decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
+      );
+    }
+
+    final curve = CurvedAnimation(parent: _ctrl, curve: AppMotion.easePulse);
     return FadeTransition(
       opacity: Tween<double>(begin: 0.35, end: 1.0).animate(curve),
       child: ScaleTransition(
-        scale: Tween<double>(begin: 0.82, end: 1.0).animate(curve),
+        scale: Tween<double>(begin: 0.85, end: 1.0).animate(curve),
         child: Container(
           width: 7,
           height: 7,
